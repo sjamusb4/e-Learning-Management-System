@@ -63,7 +63,25 @@ async function handelLoginUser(req, res) {
   }
 }
 
+async function handelGetUserById(req, res) {
+  const { userId } = req.params;
+  try {
+    const user = await userModel.getUserById(userId);
+    if (!user) {
+      return res.status(404).send({
+        msg: "User not found",
+      });
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
 module.exports = {
   handelRegisterUser,
   handelLoginUser,
+  handelGetUserById,
 };

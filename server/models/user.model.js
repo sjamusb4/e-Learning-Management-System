@@ -25,7 +25,15 @@ async function getUserByEmail(email) {
   return result.rows[0];
 }
 
+async function getUserById(userId) {
+  const result = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    userId,
+  ]);
+  return result.rows[0];
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
+  getUserById,
 };
