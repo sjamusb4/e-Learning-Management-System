@@ -1,83 +1,115 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("userRole");
+
+    if (username && role) {
+      setUser({ username, role });
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    navigate("/login");
+  };
 
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* LMS Title */}
+          {/* Title */}
           <div className="flex items-center">
-            <span className="text-xl font-bold text-indigo-600 cursor-pointer tracking-wide">
+            <span
+              onClick={() => navigate("/")}
+              className="text-xl font-bold text-indigo-600 cursor-pointer"
+            >
               E-Learning Management System
             </span>
           </div>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <a
-              href="/login"
-              className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Login
-            </a>
-            <a
-              href="/register"
-              className="bg-indigo-600 text-white hover:bg-indigo-500 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Register
-            </a>
+            {user ? (
+              <>
+                <span className="text-gray-700 text-sm">
+                  👤 {user.username} ({user.role})
+                </span>
+
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-400"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm"
+                >
+                  Login
+                </button>
+
+                <button
+                  onClick={() => navigate("/register")}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-500"
+                >
+                  Register
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Button */}
           <div className="flex items-center md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 hover:text-indigo-600 focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
+            <button onClick={() => setIsOpen(!isOpen)}>☰</button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-4 space-y-1">
-          <a
-            href="/login"
-            className="block text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 px-3 py-2 rounded-md text-base font-medium"
-          >
-            Login
-          </a>
-          <a
-            href="/register"
-            className="block bg-indigo-600 text-white text-center px-3 py-2 rounded-md text-base font-medium mt-2"
-          >
-            Register
-          </a>
+        <div className="md:hidden px-2 pt-2 pb-4 space-y-2">
+          {user ? (
+            <>
+              <div className="px-3 py-2 text-sm text-gray-700">
+                👤 {user.username} ({user.role})
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="block w-full bg-red-500 text-white text-left px-3 py-2 rounded-md"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="block w-full text-left px-3 py-2"
+              >
+                Login
+              </button>
+
+              <button
+                onClick={() => navigate("/register")}
+                className="block w-full bg-indigo-600 text-white px-3 py-2 rounded-md"
+              >
+                Register
+              </button>
+            </>
+          )}
         </div>
       )}
     </nav>
