@@ -10,11 +10,13 @@ const {
   handleGetStudentDashboardData,
   handleGetModuleById,
   handdleActivateModuleById,
+  handleGetAllModules,
 } = require("../controllers/module.controller");
 
 const router = express.Router();
 
 router.get("/", authMiddleware, handleGetAllModulesWithLessons);
+router.get("/all", authMiddleware, handleGetAllModules);
 router.get(
   "/student-dashboard/:studentId",
   authMiddleware,

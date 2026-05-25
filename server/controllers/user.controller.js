@@ -24,6 +24,7 @@ async function handelRegisterUser(req, res) {
     });
   }
 }
+
 async function handelLoginUser(req, res) {
   const { email, password } = req.body;
 
@@ -41,7 +42,11 @@ async function handelLoginUser(req, res) {
       }
 
       const token = jwt.sign(
-        { user_id: user.user_id, user_role: user.role },
+        {
+          user_id: user.user_id,
+          user_role: user.role,
+          username: user.username,
+        },
         process.env.JWT_SECRET,
         { expiresIn: "5h" },
       );
@@ -49,6 +54,7 @@ async function handelLoginUser(req, res) {
       res.send({
         user_id: user.user_id,
         user_role: user.role,
+        username: user.username,
         token,
       });
     } else {
@@ -101,6 +107,7 @@ async function handelGetAllUsers(req, res) {
     });
   }
 }
+
 async function handelDeleteUserById(req, res) {
   const { userId } = req.params;
   const { user_role } = req.user; // from auth middleware

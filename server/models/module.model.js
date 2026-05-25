@@ -19,6 +19,14 @@ async function getAllModulesWIthLessons(menotrId) {
   return result.rows;
 }
 
+async function getAllModules() {
+  const result =
+    await db.query(`SELECT m.*, u.username AS creator_name, u.email AS creator_email
+    FROM modules m
+    INNER JOIN users u ON m.created_by = u.user_id;`);
+  return result.rows;
+}
+
 async function getModuleByIdAndStudentId(studentId, moduleId) {
   const result = await db.query(moduleDatabyModuleIdAndStudentIdQuery, [
     studentId,
@@ -72,6 +80,7 @@ async function activateModuleById(moduleId) {
 module.exports = {
   createModule,
   getModuleById,
+  getAllModules,
   getModuleByIdAndStudentId,
   getAllModulesByCreatedBy,
   updateModule,

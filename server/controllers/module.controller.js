@@ -47,6 +47,23 @@ async function handleGetAllModulesWithLessons(req, res) {
   }
 }
 
+async function handleGetAllModules(req, res) {
+  const { user_role } = req.user; // from auth middleware
+  if (user_role !== "Admin" && user_role !== "Mentor") {
+    return res.status(403).send({
+      msg: "Forbidden: Only admin and mentor can view all modules",
+    });
+  }
+  try {
+    const modules = await moduleModel.getAllModules();
+    res.send(modules);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
 //can be accessed by admin, mentor and student
 async function handleGetModuleByIdAndStudentId(req, res) {
   const { moduleId } = req.params;
@@ -217,6 +234,7 @@ async function handdleActivateModuleById(req, res) {
 
 module.exports = {
   handleCreateModule,
+  handleGetAllModules,
   handleGetAllModulesWithLessons,
   handleGetModuleById,
   handleGetModuleByIdAndStudentId,
