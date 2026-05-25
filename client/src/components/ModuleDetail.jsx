@@ -61,7 +61,7 @@ export default function ModuleDetail() {
           return (
             <Link
               key={lesson.lesson_id}
-              to={`/student-dashboard/module/${moduleId}/lesson/${lesson.id}`}
+              to={`/student-dashboard/module/${moduleId}/lesson/${lesson.lesson_id}`}
               className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-500 transition-all group"
             >
               <span className="font-medium text-gray-700 group-hover:text-indigo-600">

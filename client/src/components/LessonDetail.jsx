@@ -1,15 +1,35 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { mockModules } from "../data/mockData";
+import axios from "axios";
 
 export default function LessonDetail() {
   const { moduleId, lessonId } = useParams();
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-  // Find the nested lesson reference
-  const currentModule = mockModules.find((m) => m.id === moduleId);
-  const currentLesson = currentModule?.lessons.find((l) => l.id === lessonId);
+  const token = localStorage.getItem("token");
 
+  const [currentLesson, setCurrentLesson] = useState([]);
+
+  useEffect(() => {
+    async function getCurrentLessonData() {
+      try {
+        const result = await axios.get(`${apiUrl}/api/lesson/${lessonId}`, {
+          headers: { token: token },
+        });
+        console.log(result.data);
+        setCurrentLesson(result.data);
+        // Update your state here, e.g., setDashboardData(result.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    }
+
+    if (lessonId) {
+      getCurrentLessonData();
+    }
+  }, [lessonId]);
   // Load baseline status from persistent localStorage arrays
   const getInitialCompleteStatus = () => {
     const list = JSON.parse(localStorage.getItem("completedLessons") || "[]");
@@ -24,18 +44,16 @@ export default function LessonDetail() {
   }
 
   const handleToggleComplete = () => {
-    let list = JSON.parse(localStorage.getItem("completedLessons") || "[]");
-
-    if (isCompleted) {
-      list = list.filter((id) => id !== lessonId);
-    } else {
-      list.push(lessonId);
+    try {
+      const result = axios.post(
+        `${apiUrl}/api/lesson-progress/`,
+        { lessonId: currentLesson.lesson_id },
+        { headers: { token: token } },
+      );
+      console.log(result.data);
+    } catch (error) {
+      console.error("Error completing lesson:", error);
     }
-
-    localStorage.setItem("completedLessons", JSON.stringify(list));
-    setIsCompleted(!isCompleted);
-
-    // Auto-redirect student back to module index screen after toggling complete state
     navigate(`/student-dashboard/module/${moduleId}`);
   };
 

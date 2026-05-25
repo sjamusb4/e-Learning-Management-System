@@ -38,6 +38,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import StudentDashboard from "./pages/StudentDashboard";
 import ModuleDetail from "./components/ModuleDetail";
 import LessonDetail from "./components/LessonDetail";
+import MentorDashboard from "./pages/MentorDashboard";
+import AdminDashboard from "./pages/AdminDahboard";
 
 export default function App() {
   return (
@@ -73,6 +75,8 @@ export default function App() {
             // </ProtectedRoute>
           }
         />
+        <Route path="/mentor-dashboard" element={<MentorDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </div>
   );
