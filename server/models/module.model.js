@@ -1,4 +1,9 @@
 const db = require("../config/db");
+const {
+  studentDashboardDataQuery,
+  moduleDatabyModuleIdAndStudentIdQuery,
+  allModulesWithAllLessonsQuery,
+} = require("./FunctionsQueries");
 
 async function createModule(moduleData) {
   const { title, description, createdBy } = moduleData;
@@ -9,11 +14,17 @@ async function createModule(moduleData) {
   return result.rows[0];
 }
 
-async function getAllModules() {
-  const result = await db.query(
-    "SELECT * FROM modules ORDER BY created_at DESC",
-  );
+async function getAllModulesWIthLessons(menotrId) {
+  const result = await db.query(allModulesWithAllLessonsQuery, [menotrId]);
   return result.rows;
+}
+
+async function getModuleByIdAndStudentId(studentId, moduleId) {
+  const result = await db.query(moduleDatabyModuleIdAndStudentIdQuery, [
+    studentId,
+    moduleId,
+  ]);
+  return result.rows[0];
 }
 
 async function getModuleById(moduleId) {
@@ -44,11 +55,28 @@ async function deleteModule(moduleId) {
   await db.query("DELETE FROM modules WHERE module_id = $1", [moduleId]);
 }
 
+async function getStudentDashboardData(studentId) {
+  const result = await db.query(studentDashboardDataQuery, [studentId]);
+  return result.rows;
+}
+
+async function activateModuleById(moduleId) {
+  const result = await db.query(
+    "UPDATE modules SET is_active = NOT is_active WHERE module_id = $1 RETURNING *",
+    [moduleId],
+  );
+
+  return result.rows;
+}
+
 module.exports = {
   createModule,
   getModuleById,
+  getModuleByIdAndStudentId,
   getAllModulesByCreatedBy,
   updateModule,
   deleteModule,
-  getAllModules,
+  getAllModulesWIthLessons,
+  getStudentDashboardData,
+  activateModuleById,
 };

@@ -32,8 +32,22 @@ async function getUserById(userId) {
   return result.rows[0];
 }
 
+async function getAllUsers() {
+  const result = await db.query(
+    "SELECT user_id, username, email, role FROM users WHERE role <> $1",
+    ["Admin"],
+  );
+  return result.rows;
+}
+async function deleteUserById(userId) {
+  const result = await db.query("DELETE FROM users WHERE user_id=$1", [userId]);
+  return result.rows;
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
   getUserById,
+  getAllUsers,
+  deleteUserById,
 };
