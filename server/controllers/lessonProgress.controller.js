@@ -1,8 +1,8 @@
 const lessonProgressModel = require("../models/lessonProgress.model");
 
 async function handleCreateLessonProgress(req, res) {
-  const { user_id, lessonId } = req.body;
-  const { user_role } = req.user;
+  const { lessonId } = req.body;
+  const { user_role, user_id } = req.user;
   if (user_role !== "Student") {
     return res.status(403).send({
       msg: "Forbidden: Only students can create lesson progress",
@@ -37,9 +37,10 @@ async function handleCreateLessonProgress(req, res) {
 }
 
 async function handleUpdateLessonProgress(req, res) {
-  const { progressId } = req.params;
-  const { completed, completedAt } = req.body;
-  const { user_role } = req.user;
+  const { lessonId } = req.params;
+  const { completed } = req.body;
+  const completedAt = completed ? new Date() : null;
+  const { user_role, user_id } = req.user;
   if (user_role !== "Student") {
     return res.status(403).send({
       msg: "Forbidden: Only students can update lesson progress",
@@ -48,8 +49,9 @@ async function handleUpdateLessonProgress(req, res) {
 
   try {
     const progress = await lessonProgressModel.updateLessonProgress(
-      progressId,
       completed,
+      user_id,
+      lessonId,
       completedAt,
     );
     if (progress) {
@@ -116,10 +118,33 @@ async function handleGetLessonProgressByStudentAndLesson(req, res) {
     });
   }
 }
+async function handleGetAllStudentLessonProgress(req, res) {
+  const { user_role } = req.user;
+  if (user_role !== "Admin" && user_role !== "Mentor") {
+    return res.status(403).send({
+      msg: "Forbidden: Only admin and mentor can view lesson progress",
+    });
+  }
+  try {
+    const progress = await lessonProgressModel.getAllStudnetLEssonProgress();
+    if (progress) {
+      res.send({ progress });
+    } else {
+      res.status(404).send({
+        msg: "Lesson progress not found",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      msg: error.message,
+    });
+  }
+}
 
 module.exports = {
   handleCreateLessonProgress,
   handleUpdateLessonProgress,
   handleGetLessonProgressByStudent,
   handleGetLessonProgressByStudentAndLesson,
+  handleGetAllStudentLessonProgress,
 };

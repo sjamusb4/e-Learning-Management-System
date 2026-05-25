@@ -30,15 +30,15 @@ async function handleCreateModule(req, res) {
 }
 
 //can be accessed by admin only
-async function handleGetAllModules(req, res) {
-  const { user_role } = req.user; // from auth middleware
-  if (user_role !== "Admin") {
+async function handleGetAllModulesWithLessons(req, res) {
+  const { user_role, user_id } = req.user; // from auth middleware
+  if (user_role !== "Admin" && user_role !== "Mentor") {
     return res.status(403).send({
-      msg: "Forbidden: Only admin can view all modules",
+      msg: "Forbidden: Only admin and mentor can view all modules",
     });
   }
   try {
-    const modules = await moduleModel.getAllModules();
+    const modules = await moduleModel.getAllModulesWIthLessons(user_id);
     res.send(modules);
   } catch (error) {
     res.status(500).send({
@@ -48,6 +48,28 @@ async function handleGetAllModules(req, res) {
 }
 
 //can be accessed by admin, mentor and student
+async function handleGetModuleByIdAndStudentId(req, res) {
+  const { moduleId } = req.params;
+  const { studentId } = req.body;
+  try {
+    const module = await moduleModel.getModuleByIdAndStudentId(
+      studentId,
+      moduleId,
+    );
+    if (module) {
+      res.send(module);
+    } else {
+      res.status(404).send({
+        msg: "Module not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
 async function handleGetModuleById(req, res) {
   const { moduleId } = req.params;
   try {
@@ -120,6 +142,7 @@ async function handleUpdateModule(req, res) {
 }
 
 //can be accessed by admin and mentor only
+
 async function handleDeleteModule(req, res) {
   const { moduleId } = req.params;
   const { user_role } = req.user; // from auth middleware
@@ -148,11 +171,58 @@ async function handleDeleteModule(req, res) {
   }
 }
 
+//can be accessed by admin and mentor only
+async function handleGetStudentDashboardData(req, res) {
+  const { user_role } = req.user; // from auth middleware
+  const { studentId } = req.params;
+  if (
+    user_role !== "Student" &&
+    user_role !== "Admin" &&
+    user_role !== "Mentor"
+  ) {
+    return res.status(403).send({
+      msg: "Forbidden: Only students, mentors and admin can access dashboard data",
+    });
+  }
+
+  try {
+    const dashboardData = await moduleModel.getStudentDashboardData(studentId);
+    res.send(dashboardData);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
+//can be accessed by admin and mentor only
+async function handdleActivateModuleById(req, res) {
+  const { user_role } = req.user; // from auth middleware
+  const { moduleId } = req.params;
+  if (user_role !== "Admin") {
+    return res.status(403).send({
+      msg: "Forbidden: Only admin can access",
+    });
+  }
+
+  try {
+    const updatedModule = await moduleModel.activateModuleById(moduleId);
+    res.send(updatedModule);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
 module.exports = {
   handleCreateModule,
-  handleGetAllModules,
+  handleGetAllModulesWithLessons,
   handleGetModuleById,
+  handleGetModuleByIdAndStudentId,
   handleGetAllModulesByCreatedBy,
   handleUpdateModule,
   handleDeleteModule,
+  handleGetStudentDashboardData,
+  handdleActivateModuleById,
 };

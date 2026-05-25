@@ -43,7 +43,7 @@ async function handelLoginUser(req, res) {
       const token = jwt.sign(
         { user_id: user.user_id, user_role: user.role },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" },
+        { expiresIn: "5h" },
       );
 
       res.send({
@@ -80,8 +80,60 @@ async function handelGetUserById(req, res) {
   }
 }
 
+async function handelGetAllUsers(req, res) {
+  const { user_role } = req.user; // from auth middleware
+  if (user_role !== "Admin" && user_role !== "Mentor") {
+    return res.status(403).send({
+      msg: "Forbidden: Only admin and mentor can view all modules",
+    });
+  }
+  try {
+    const users = await userModel.getAllUsers();
+    if (!users) {
+      return res.status(404).send({
+        msg: "Users not found",
+      });
+    }
+    res.send(users);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+async function handelDeleteUserById(req, res) {
+  const { userId } = req.params;
+  const { user_role } = req.user; // from auth middleware
+  if (user_role !== "Admin" && user_role !== "Mentor") {
+    return res.status(403).send({
+      msg: "Forbidden: Only admin and mentor can view all modules",
+    });
+  }
+  try {
+    const user = await userModel.getUserById(userId);
+    if (!user) {
+      return res.status(404).send({
+        msg: "User not found",
+      });
+    }
+    const users = await userModel.deleteUserById(userId);
+    if (!users) {
+      return res.status(404).send({
+        msg: "Error deleting user",
+      });
+    }
+    res.send(users);
+  } catch (error) {
+    res.status(500).send({
+      msg: error.message,
+    });
+  }
+}
+
 module.exports = {
   handelRegisterUser,
   handelLoginUser,
   handelGetUserById,
+  handelGetAllUsers,
+  handelDeleteUserById,
 };
