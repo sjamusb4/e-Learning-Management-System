@@ -2,21 +2,35 @@ const express = require("express");
 const { authMiddleware } = require("../middlewares/auth");
 const {
   handleCreateModule,
-  handleGetModuleById,
+  handleGetModuleByIdAndStudentId,
   handleGetAllModulesByCreatedBy,
   handleUpdateModule,
   handleDeleteModule,
-  handleGetAllModules,
+  handleGetAllModulesWithLessons,
+  handleGetStudentDashboardData,
+  handleGetModuleById,
+  handdleActivateModuleById,
 } = require("../controllers/module.controller");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, handleGetAllModules);
+router.get("/", authMiddleware, handleGetAllModulesWithLessons);
+router.get(
+  "/student-dashboard/:studentId",
+  authMiddleware,
+  handleGetStudentDashboardData,
+);
 router.post("/create", authMiddleware, handleCreateModule);
 router.get("/created-by", authMiddleware, handleGetAllModulesByCreatedBy);
+router.post(
+  "/student/:moduleId",
+  authMiddleware,
+  handleGetModuleByIdAndStudentId,
+);
 router.get("/:moduleId", authMiddleware, handleGetModuleById);
 router.put("/:moduleId", authMiddleware, handleUpdateModule);
 router.delete("/:moduleId", authMiddleware, handleDeleteModule);
+router.patch("/toggle/:moduleId", authMiddleware, handdleActivateModuleById);
 
 module.exports = {
   moduleRouter: router,
