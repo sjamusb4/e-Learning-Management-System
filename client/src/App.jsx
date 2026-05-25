@@ -1,40 +1,16 @@
-// import { Routes, Route, Navigate } from "react-router-dom";
-// import Navbar from "./components/NavBar";
-// import Login from "./pages/Login";
-// import Register from "./pages/Register";
-// import StudentDashboard from "./pages/StudentDashboard";
-// import MentorDashboard from "./pages/MentorDashboard";
-
-// function App() {
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* Navbar displays on every page */}
-//       <Navbar />
-
-//       {/* Route declarations */}
-//       <Routes>
-//         {/* Redirect homepage root to login page */}
-//         <Route path="/" element={<Navigate to="/login" />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-
-//         {/* Role-specific routes */}
-//         <Route path="/student-dashboard" element={<StudentDashboard />} />
-//         <Route path="/mentor-dashboard" element={<MentorDashboard />} />
-//       </Routes>
-//     </div>
-//   );
-// }
-
-// export default App;
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+import Home from "./pages/Home";
 
-// Import your new dashboard ecosystem features
 import StudentDashboard from "./pages/StudentDashboard";
 import ModuleDetail from "./components/ModuleDetail";
 import LessonDetail from "./components/LessonDetail";
@@ -44,39 +20,78 @@ import AdminDashboard from "./pages/AdminDahboard";
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {!["/login", "/register"].includes(location.pathname) && <Navbar />}{" "}
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* ✅ Default */}
+        <Route path="/" element={<Home />} />
 
-        {/* Protected Student Layout & Child Sub-routing links */}
+        {/* ✅ Public Routes */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
+        {/* ✅ Student Routes */}
         <Route
           path="/student-dashboard"
           element={
-            // <ProtectedRoute allowedRoles={["Student"]}>
-            <StudentDashboard />
-            // </ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentDashboard />
+            </ProtectedRoute>
           }
         />
+
         <Route
           path="/student-dashboard/module/:moduleId"
           element={
-            // <ProtectedRoute allowedRoles={["Student"]}>
-            <ModuleDetail />
-            // </ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <ModuleDetail />
+            </ProtectedRoute>
           }
         />
+
         <Route
           path="/student-dashboard/module/:moduleId/lesson/:lessonId"
           element={
-            // <ProtectedRoute allowedRoles={["Student"]}>
-            <LessonDetail />
-            // </ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <LessonDetail />
+            </ProtectedRoute>
           }
         />
-        <Route path="/mentor-dashboard" element={<MentorDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+
+        {/* ✅ Mentor */}
+        <Route
+          path="/mentor-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["Mentor"]}>
+              <MentorDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ✅ Admin */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );
