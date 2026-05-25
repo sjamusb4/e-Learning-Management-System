@@ -12,7 +12,7 @@ CREATE TABLE modules (
     title VARCHAR(150) NOT NULL,
     description TEXT,
     created_by INT NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Automatically captures creation time
     
     -- Links module to a specific user (mentor)
