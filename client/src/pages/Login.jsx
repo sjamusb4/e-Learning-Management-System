@@ -1,88 +1,73 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import LoginForm from "../components/LoginForm";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const result = await axios.post(`${apiUrl}/api/user/login`, {
         email,
         password,
       });
-      console.log("Login successful:", result.data);
+      console.log(result);
 
-      // 1. Store token and role data (adjust keys based on your API response structure)
-      const { token, role, user_id } = result.data;
+      const { token, user_role, user_id, username } = result.data;
+
       localStorage.setItem("token", token);
-      localStorage.setItem("userRole", role);
+      localStorage.setItem("userRole", user_role);
       localStorage.setItem("userId", user_id);
+      localStorage.setItem("username", username);
 
-      // 2. Conditional redirection based on the role string
-      if (role === "Mentor") {
+      toast.success("Login successful ✅");
+
+      if (user_role === "Mentor") {
         navigate("/mentor-dashboard");
-      } else if (role === "Student") {
+      } else if (user_role === "Student") {
         navigate("/student-dashboard");
-      } else {
-        // Fallback or generic page
-        navigate("/dashboard");
+      } else if (user_role == "Admin") {
+        navigate("/admin-dashboard");
       }
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
+      toast.error(error.response?.data?.msg || "Login failed ❌");
+    } finally {
+      setLoading(false); // ✅ always stop loader
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Sign in to your account
-          </h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+      {/* ✅ LOADER GOES HERE */}
+      {loading && (
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+          <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4 rounded-md">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className="relative block w-full mt-1 rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                className="relative block w-full mt-1 rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-          </div>
+      )}
 
-          <div>
-            <button
-              type="submit"
-              className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors"
-            >
-              Sign In
-            </button>
-          </div>
-        </form>
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-md">
+        <h2 className="text-center text-3xl font-bold">
+          Sign in to your account
+        </h2>
+
+        <LoginForm
+          email={email}
+          password={password}
+          setEmail={setEmail}
+          setPassword={setPassword}
+          handleSubmit={handleSubmit}
+          loading={loading}
+        />
       </div>
     </div>
   );
