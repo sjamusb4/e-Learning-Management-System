@@ -55,7 +55,7 @@ export default function Login() {
         </div>
       )}
 
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-md">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-gray-50 dark:bg-gray-200 p-8 shadow-md">
         <h2 className="text-center text-3xl font-bold">
           Sign in to your account
         </h2>

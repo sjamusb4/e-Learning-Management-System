@@ -71,6 +71,16 @@ export default function LoginForm({
           "Sign In"
         )}
       </button>
+
+      <p class="text-sm text-center font-light text-gray-900 dark:text-gray-900">
+        Don’t have an account yet?{" "}
+        <a
+          href="/register"
+          class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+        >
+          Sign up
+        </a>
+      </p>
     </form>
   );
 }

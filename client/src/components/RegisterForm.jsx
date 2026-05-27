@@ -92,6 +92,15 @@ export default function RegisterForm({
           "Register"
         )}
       </button>
+      <p class="text-sm text-center font-light text-gray-900 dark:text-gray-900">
+        Already have an account?{" "}
+        <a
+          href="/login"
+          class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+        >
+          Login here
+        </a>
+      </p>
     </form>
   );
 }
