@@ -16,22 +16,37 @@ import ModuleDetail from "./components/ModuleDetail";
 import LessonDetail from "./components/LessonDetail";
 import MentorDashboard from "./pages/MentorDashboard";
 import AdminDashboard from "./pages/AdminDahboard";
+import { useEffect, useState } from "react";
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const location = useLocation();
+
+  // ✅ Load from localStorage on refresh
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("userRole");
+
+    if (username && role) {
+      setUser({ username, role });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {!["/login", "/register"].includes(location.pathname) && <Navbar />}{" "}
+      {!["/login", "/register"].includes(location.pathname) && (
+        <Navbar user={user} setUser={setUser} />
+      )}
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-        {/* ✅ Default */}
         <Route path="/" element={<Home />} />
 
-        {/* ✅ Public Routes */}
+        {/* Public Routes */}
         <Route
           path="/login"
           element={
             <PublicRoute>
-              <Login />
+              <Login setUser={setUser} />
             </PublicRoute>
           }
         />
@@ -45,7 +60,7 @@ export default function App() {
           }
         />
 
-        {/* ✅ Student Routes */}
+        {/* Student Routes */}
         <Route
           path="/student-dashboard"
           element={
@@ -73,7 +88,7 @@ export default function App() {
           }
         />
 
-        {/* ✅ Mentor */}
+        {/* Mentor */}
         <Route
           path="/mentor-dashboard"
           element={
@@ -83,7 +98,7 @@ export default function App() {
           }
         />
 
-        {/* ✅ Admin */}
+        {/* Admin */}
         <Route
           path="/admin-dashboard"
           element={

@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch Users
+  // Fetch Users
   useEffect(() => {
     async function getUsersData() {
       try {
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
         });
         setUsers(result.data);
       } catch {
-        toast.error("Failed to fetch users ❌");
+        toast.error("Failed to fetch users!");
       } finally {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ export default function AdminDashboard() {
     getUsersData();
   }, []);
 
-  // ✅ Fetch Modules
+  // Fetch Modules
   useEffect(() => {
     async function getModulesData() {
       try {
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
         });
         setModules(result.data);
       } catch {
-        toast.error("Failed to fetch modules ❌");
+        toast.error("Failed to fetch modules!");
       } finally {
         setLoading(false);
       }
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
               activeTab === tab ? "bg-blue-600" : "text-gray-400"
             }`}
           >
-            {tab === "users" ? "👥 Users" : "📚 Modules"}
+            {tab === "users" ? "All Users" : "All Modules"}
           </button>
         ))}
       </nav>

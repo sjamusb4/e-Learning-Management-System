@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import BuilderTab from "../components/BuilderTab";
 import AssignTab from "../components/AssignTab";
 import ProgressTab from "../components/ProgressTab";
+import Loader from "../utils/Loader";
 
 export default function MentorDashboard() {
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
@@ -14,7 +15,6 @@ export default function MentorDashboard() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("build");
 
-  // ✅ Fetch Modules
   useEffect(() => {
     async function getModulesData() {
       setLoading(true);
@@ -24,7 +24,7 @@ export default function MentorDashboard() {
         });
         setModules(result.data);
       } catch (error) {
-        toast.error("Failed to fetch modules ❌");
+        toast.error("Failed to fetch modules!");
       } finally {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ export default function MentorDashboard() {
     getModulesData();
   }, []);
 
-  // ✅ Fetch Students Progress
+  // Fetch Students Progress
   useEffect(() => {
     async function getStudents() {
       try {
@@ -42,7 +42,7 @@ export default function MentorDashboard() {
         });
         setStudents(result.data.progress);
       } catch (error) {
-        toast.error("Failed to fetch progress ❌");
+        toast.error("Failed to fetch progress!");
       }
     }
 
@@ -51,16 +51,11 @@ export default function MentorDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* ✅ Loader */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
+      {loading && <Loader />}
 
       {/* Sidebar */}
       <nav className="w-64 bg-gray-900 text-white p-4 space-y-2">
-        <div className="text-xl font-bold mb-6">LMS Mentor</div>
+        <div className="text-xl font-bold mb-6">LMS Mentor Dashbaord</div>
 
         {["build", "assign", "progress"].map((tab) => (
           <button
@@ -71,10 +66,10 @@ export default function MentorDashboard() {
             }`}
           >
             {tab === "build"
-              ? "📦 Builder"
+              ? "Modules and Lessons"
               : tab === "assign"
-                ? "🎯 Assign"
-                : "📊 Progress"}
+                ? "Enroll Student"
+                : "Students Progress"}
           </button>
         ))}
       </nav>

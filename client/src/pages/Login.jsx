@@ -3,8 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoginForm from "../components/LoginForm";
+import Loader from "../utils/Loader";
 
-export default function Login() {
+export default function Login({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,9 @@ export default function Login() {
       localStorage.setItem("userId", user_id);
       localStorage.setItem("username", username);
 
-      toast.success("Login successful ✅");
+      setUser({ username, user_role });
+
+      toast.success("Login successful!");
 
       if (user_role === "Mentor") {
         navigate("/mentor-dashboard");
@@ -40,20 +43,16 @@ export default function Login() {
         navigate("/admin-dashboard");
       }
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Login failed ❌");
+      toast.error(error.response?.data?.msg || "Login failed!");
     } finally {
-      setLoading(false); // ✅ always stop loader
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      {/* ✅ LOADER GOES HERE */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-          <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
+      {/* loader */}
+      {loading && <Loader />}
 
       <div className="w-full max-w-md space-y-8 rounded-xl bg-gray-50 dark:bg-gray-200 p-8 shadow-md">
         <h2 className="text-center text-3xl font-bold">

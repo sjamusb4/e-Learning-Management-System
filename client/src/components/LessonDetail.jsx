@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 import { useLocation } from "react-router-dom";
+import Loader from "../utils/Loader";
 
 export default function LessonDetail() {
   const location = useLocation();
@@ -19,7 +20,7 @@ export default function LessonDetail() {
     location.state?.lesson.is_completed,
   );
 
-  // ✅ Fetch lesson
+  // Fetch lesson
   useEffect(() => {
     async function getCurrentLessonData() {
       setLoading(true);
@@ -30,10 +31,10 @@ export default function LessonDetail() {
         });
 
         setCurrentLesson(result.data);
-        setIsCompleted(result.data.is_completed); // ✅ backend truth
+        setIsCompleted(result.data.is_completed); //
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load lesson ❌");
+        toast.error("Failed to load lesson!");
       } finally {
         setLoading(false);
       }
@@ -44,7 +45,6 @@ export default function LessonDetail() {
     }
   }, [lessonId]);
 
-  // ✅ Toggle complete
   const handleToggleComplete = async () => {
     try {
       setLoading(true);
@@ -56,43 +56,31 @@ export default function LessonDetail() {
       );
 
       toast.success(
-        isCompleted ? "Marked as incomplete ✅" : "Lesson completed 🎉",
+        isCompleted ? "Marked as incomplete!" : "Lesson completed!",
       );
 
       navigate(`/student-dashboard/module/${moduleId}`);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong ❌");
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Loader
   if (loading && !currentLesson) {
-    return (
-      <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
-  // ✅ Not found
   if (!currentLesson) {
     return (
-      <div className="p-8 text-center text-gray-500">Lesson not found 📭</div>
+      <div className="p-8 text-center text-gray-500">Lesson not found!</div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* ✅ Overlay loader during action */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-
+      {loading && <Loader />}
       <button
         onClick={() => navigate(`/student-dashboard/module/${moduleId}`)}
         className="text-sm font-medium text-indigo-600 hover:text-indigo-500 mb-6"
@@ -119,7 +107,7 @@ export default function LessonDetail() {
             }`}
           >
             {location.state?.lesson.is_completed
-              ? "Already Completed ✅"
+              ? "Already Completed"
               : "Mark as Complete & Exit"}
           </button>
         </div>

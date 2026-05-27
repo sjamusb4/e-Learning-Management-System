@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../components/RegisterForm";
+import Loader from "../utils/Loader";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -26,12 +27,12 @@ export default function Register() {
         role: userRole,
       });
 
-      toast.success("Registration successful ✅");
+      toast.success("Registration successful!");
 
       // ✅ optional: auto redirect to login
       navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed ❌");
+      toast.error(error.response?.data?.message || "Registration failed!");
     } finally {
       setLoading(false);
     }
@@ -40,11 +41,7 @@ export default function Register() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       {/* ✅ Transparent Loader Overlay (optional) */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-          <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
+      {loading && <Loader />}
 
       <div className="w-full max-w-md space-y-8 rounded-xl bg-gray-50 dark:bg-gray-200 p-8 shadow-md">
         <h2 className="text-center text-3xl font-bold">Create your account</h2>

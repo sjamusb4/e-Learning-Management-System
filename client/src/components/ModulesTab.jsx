@@ -15,7 +15,6 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
         { headers: { token } },
       );
 
-      // ✅ Update UI instantly
       setModules((prev) =>
         prev.map((m) =>
           m.module_id === id
@@ -27,9 +26,9 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
         ),
       );
 
-      toast.success("Module updated ✅");
+      toast.success("Module updated!");
     } catch {
-      toast.error("Failed ❌");
+      toast.error("Failed!");
     } finally {
       setLoading(false);
     }

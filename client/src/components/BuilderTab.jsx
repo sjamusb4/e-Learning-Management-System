@@ -6,7 +6,6 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
-  // ✅ Accordion
   const [openModules, setOpenModules] = useState({});
 
   const toggleModule = (id) => {
@@ -16,7 +15,6 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
     }));
   };
 
-  // ✅ Form states
   const [modTitle, setModTitle] = useState("");
   const [modDesc, setModDesc] = useState("");
 
@@ -24,15 +22,14 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
   const [lesTitle, setLesTitle] = useState("");
   const [lesContent, setLesContent] = useState("");
 
-  // ✅ Compute serial number safely
   const selectedModuleObj = modules.find((m) => m.module_id == selectedMod);
 
   const serialNo = selectedModuleObj?.lessons?.at(-1)?.serial_number + 1 || 1;
 
-  // ✅ Add Module
+  // Add Module
   const addModule = async () => {
     if (!modTitle || !modDesc) {
-      return toast.error("Fill all fields ❌");
+      return toast.error("Fill all fields!");
     }
 
     try {
@@ -48,21 +45,21 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
 
       setModules((prev) => [...prev, result.data]);
 
-      toast.success("Module created ✅");
+      toast.success("Module created!");
 
       setModTitle("");
-      setModDesc();
+      setModDesc("");
     } catch (error) {
-      toast.error("Failed to create module ❌");
+      toast.error("Failed to create module!");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Add Lesson
+  // Add Lesson
   const addLesson = async () => {
-    if (!selectedMod || !lesTitle) {
-      return toast.error("Select module & enter title ❌");
+    if (!selectedMod || !lesTitle || !lesContent) {
+      return toast.error("Select module & enter title and content!");
     }
 
     try {
@@ -78,7 +75,6 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
         { headers: { token } },
       );
 
-      // ✅ Update UI instantly
       setModules((prev) =>
         prev.map((m) =>
           m.module_id == selectedMod
@@ -90,12 +86,12 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
         ),
       );
 
-      toast.success("Lesson added ✅");
+      toast.success("Lesson added!");
 
       setLesTitle("");
       setLesContent("");
     } catch (error) {
-      toast.error("Failed to add lesson ❌");
+      toast.error("Failed to add lesson!");
     } finally {
       setLoading(false);
     }
@@ -103,7 +99,6 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
 
   return (
     <div className="space-y-6">
-      {/* ✅ Forms */}
       <div className="grid grid-cols-2 gap-6">
         {/* Module */}
         <div className="bg-white p-4 rounded shadow">
@@ -172,9 +167,9 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
         </div>
       </div>
 
-      {/* ✅ Curriculum Accordion */}
+      {/* All Modules  */}
       <div className="bg-white p-4 rounded border shadow-sm">
-        <h3 className="font-bold mb-4">Curriculum (Click Module)</h3>
+        <h3 className="font-bold mb-4">All Modules</h3>
 
         {modules.map((m) => {
           const isOpen = openModules[m.module_id];
@@ -215,4 +210,3 @@ export default function BuilderTab({ modules, setModules, setLoading }) {
     </div>
   );
 }
-``;

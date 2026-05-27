@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loader from "../utils/Loader";
 
 export default function ModuleDetail() {
   const { moduleId } = useParams();
@@ -27,7 +28,7 @@ export default function ModuleDetail() {
         setCurrentModule(result.data);
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load module ❌");
+        toast.error("Failed to load module!");
       } finally {
         setLoading(false);
       }
@@ -38,19 +39,13 @@ export default function ModuleDetail() {
     }
   }, [moduleId, userId]);
 
-  // ✅ Loader Screen
   if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
-  // ✅ Not Found
   if (!currentModule) {
     return (
-      <div className="p-8 text-center text-gray-500">Module not found 📭</div>
+      <div className="p-8 text-center text-gray-500">Module not found!</div>
     );
   }
 
@@ -64,14 +59,11 @@ export default function ModuleDetail() {
       </Link>
 
       <h1 className="text-3xl font-bold mb-2">{currentModule.module_title}</h1>
-
       <p className="text-gray-600 mb-8">{currentModule.module_description}</p>
-
       <h2 className="text-lg font-semibold mb-4">Lessons</h2>
 
-      {/* ✅ Empty Lessons */}
       {currentModule.lessons?.length === 0 && (
-        <p className="text-gray-500">No lessons available 📚</p>
+        <p className="text-gray-500">No lessons available!</p>
       )}
 
       <div className="space-y-3">

@@ -10,6 +10,9 @@ export default function AssignTab({ modules, students, setLoading }) {
   const token = localStorage.getItem("token");
 
   const handleAssign = async () => {
+    if (!studentId || !moduleId) {
+      return toast.error("Select Module & Student!");
+    }
     try {
       setLoading(true);
       await axios.post(
@@ -18,9 +21,9 @@ export default function AssignTab({ modules, students, setLoading }) {
         { headers: { token } },
       );
 
-      toast.success("Assigned successfully ✅");
+      toast.success("Assigned successfully!");
     } catch {
-      toast.error("Assignment failed ❌");
+      toast.error("Assignment failed!");
     } finally {
       setLoading(false);
     }

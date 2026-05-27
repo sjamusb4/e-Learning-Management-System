@@ -16,12 +16,11 @@ export default function UsersTab({ users, setUsers, setLoading }) {
         headers: { token },
       });
 
-      // ✅ Update UI instantly
       setUsers((prev) => prev.filter((u) => u.user_id !== id));
 
-      toast.success("User deleted ✅");
+      toast.success("User deleted!");
     } catch {
-      toast.error("Delete failed ❌");
+      toast.error("Delete failed!");
     } finally {
       setLoading(false);
     }
