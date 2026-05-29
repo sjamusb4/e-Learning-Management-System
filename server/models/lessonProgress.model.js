@@ -1,5 +1,8 @@
 const db = require("../config/db");
-const { allsStudentLessonProgressQuery } = require("./FunctionsQueries");
+const {
+  allsStudentLessonProgressQuery,
+  getAllStudentModuleWiseAndLeessonWiseProgress,
+} = require("./FunctionsQueries");
 
 async function createLessonProgress(studentId, lessonId) {
   const result = await db.query(
@@ -44,7 +47,8 @@ async function getLessonProgressByStudent(studentId) {
   return result.rows;
 }
 async function getAllStudnetLEssonProgress() {
-  const result = await db.query(allsStudentLessonProgressQuery);
+  //const result = await db.query(allsStudentLessonProgressQuery);
+  const result = await db.query(getAllStudentModuleWiseAndLeessonWiseProgress);
   return result.rows;
 }
 

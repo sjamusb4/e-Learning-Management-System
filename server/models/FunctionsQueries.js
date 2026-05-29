@@ -10,7 +10,7 @@ const studentDashboardDataQuery = `
   JOIN modules m ON e.module_id = m.module_id
   LEFT JOIN lessons l ON m.module_id = l.module_id
   LEFT JOIN lesson_progress lp ON l.lesson_id = lp.lesson_id AND lp.student_id = e.student_id
-  WHERE e.student_id = $1
+  WHERE e.student_id = $1 AND m.is_active = TRUE
   GROUP BY m.module_id, m.title, m.description
   ORDER BY m.title ASC;
 `;
@@ -112,9 +112,65 @@ const allsStudentLessonProgressQuery = `SELECT
 
     ORDER BY u.user_id;
 `;
+
+const getAllStudentModuleWiseAndLeessonWiseProgress = `WITH module_lesson_counts AS (
+    -- Step 1: Get the exact total number of lessons per module safely
+        SELECT 
+            module_id,
+            COUNT(lesson_id) AS total_lessons
+        FROM lessons
+        GROUP BY module_id
+        ),
+        student_module_stats AS (
+            -- Step 2: Calculate progress per module for enrolled students
+            SELECT 
+                e.student_id,
+                e.module_id,
+                m.title AS module_title,
+                COALESCE(mlc.total_lessons, 0) AS total_lessons,
+                COUNT(DISTINCT lp.lesson_id) FILTER (WHERE lp.completed = TRUE) AS completed_lessons
+            FROM enrollments e
+            JOIN modules m ON e.module_id = m.module_id
+            LEFT JOIN module_lesson_counts mlc ON e.module_id = mlc.module_id
+            LEFT JOIN lessons l ON m.module_id = l.module_id
+            LEFT JOIN lesson_progress lp ON l.lesson_id = lp.lesson_id AND lp.student_id = e.student_id
+            GROUP BY e.student_id, e.module_id, m.title, mlc.total_lessons
+        ),
+        json_per_student AS (
+            -- Step 3: Bundle module metrics into clean JSON objects per student
+            SELECT 
+                sms.student_id,
+                jsonb_agg(
+                    jsonb_build_object(
+                        'module_title', sms.module_title,
+                        'total_lessons', sms.total_lessons,
+                        'completed_lessons', sms.completed_lessons,
+                        'completion_percentage', CASE 
+                            WHEN sms.total_lessons = 0 THEN 0
+                            ELSE ROUND((sms.completed_lessons::NUMERIC / sms.total_lessons) * 100, 2)
+                        END,
+                        'is_module_completed', CASE 
+                            WHEN sms.total_lessons > 0 AND sms.completed_lessons = sms.total_lessons THEN TRUE 
+                            ELSE FALSE 
+                        END
+                    ) ORDER BY sms.module_title
+                ) AS modules_progress
+            FROM student_module_stats sms
+            GROUP BY sms.student_id
+        )
+        -- Step 4: Master join ensuring ALL students appear, even with 0 enrollments
+        SELECT 
+            u.user_id AS id,
+            u.username AS name,
+            COALESCE(jps.modules_progress, '[]'::jsonb) AS modules
+        FROM users u
+        LEFT JOIN json_per_student jps ON u.user_id = jps.student_id
+        WHERE u.role = 'Student'
+        ORDER BY u.user_id;`;
 module.exports = {
   studentDashboardDataQuery,
   moduleDatabyModuleIdAndStudentIdQuery,
   allModulesWithAllLessonsQuery,
   allsStudentLessonProgressQuery,
+  getAllStudentModuleWiseAndLeessonWiseProgress,
 };
