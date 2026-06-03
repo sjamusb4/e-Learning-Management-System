@@ -1,7 +1,12 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function ModulesTab({ modules, setModules, setLoading }) {
+export default function ModulesTab({
+  modules,
+  setModules,
+  setLoading,
+  loading,
+}) {
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
@@ -20,7 +25,7 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
           m.module_id === id
             ? {
                 ...m,
-                module_is_active: !m.module_is_active,
+                is_active: !m.is_active,
               }
             : m,
         ),
@@ -41,6 +46,7 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
       <table className="w-full text-left">
         <thead className="bg-gray-50 border-b">
           <tr>
+            <th className="p-3 w-16">Sr.No.</th>
             <th className="p-3">Title</th>
             <th className="p-3">Created by</th>
             <th className="p-3">Status</th>
@@ -49,10 +55,14 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
         </thead>
 
         <tbody>
-          {modules.map((m) => (
+          {modules.map((m, i) => (
             <tr key={m.module_id} className="border-b">
-              <td className="p-3">{m.title}</td>
-              <td className="p-3">{m.creator_name}</td>
+              {/* Added Serial Number Column */}
+              <td className="p-3 text-gray-500 font-medium">{i + 1}</td>
+
+              {/* Safe fallback string protection */}
+              <td className="p-3">{m.title || m.module_title}</td>
+              <td className="p-3">{m.creator_name || "Admin"}</td>
 
               <td className="p-3">
                 <span
@@ -67,9 +77,11 @@ export default function ModulesTab({ modules, setModules, setLoading }) {
               </td>
 
               <td className="p-3">
+                {/* Button disables on loading to block spam clicks */}
                 <button
                   onClick={() => toggleModule(m.module_id)}
-                  className={`px-3 py-1 rounded ${
+                  disabled={loading}
+                  className={`px-3 py-1 rounded transition-opacity disabled:opacity-50 disabled:cursor-not-allowed ${
                     m.is_active
                       ? "bg-yellow-500 text-white"
                       : "bg-green-600 text-white"

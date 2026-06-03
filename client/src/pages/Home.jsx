@@ -5,7 +5,7 @@ export default function Home() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("userRole");
 
-  // ✅ Auto redirect if logged in
+  // Auto redirect if logged in
   if (token) {
     if (role === "Student") navigate("/student-dashboard");
     if (role === "Mentor") navigate("/mentor-dashboard");
@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50">
-      {/* ✅ HERO SECTION */}
+      {/* HERO SECTION */}
       <div className="bg-indigo-600 text-white py-20 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           E-Learning Management System

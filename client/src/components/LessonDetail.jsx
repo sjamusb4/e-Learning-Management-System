@@ -108,7 +108,7 @@ export default function LessonDetail() {
           >
             {location.state?.lesson.is_completed
               ? "Already Completed"
-              : "Mark as Complete & Exit"}
+              : "Mark as Complete"}
           </button>
         </div>
       </article>

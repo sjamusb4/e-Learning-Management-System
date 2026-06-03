@@ -2,7 +2,12 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function AssignTab({ modules, students, setLoading }) {
+export default function AssignTab({
+  modules,
+  students,
+  setLoading,
+  onAssignSuccess,
+}) {
   const [studentId, setStudentId] = useState("");
   const [moduleId, setModuleId] = useState("");
 
@@ -10,7 +15,6 @@ export default function AssignTab({ modules, students, setLoading }) {
   const token = localStorage.getItem("token");
 
   const handleAssign = async () => {
-    // 1. Explicit validation blocks empty strings securely
     if (!studentId || !moduleId) {
       return toast.error("Select Module & Student!");
     }
@@ -18,17 +22,21 @@ export default function AssignTab({ modules, students, setLoading }) {
       setLoading(true);
       await axios.post(
         `${apiUrl}/api/enrollment/enroll`,
-        { moduleId: Number(moduleId), studentId: Number(studentId) }, // 2. Forces clean integers for backend routing safely
+        { moduleId: Number(moduleId), studentId: Number(studentId) },
         { headers: { token } },
       );
 
       toast.success("Assigned successfully!");
 
-      // 3. UI Quality of Life: Automatically reset selections on completion success
+      if (onAssignSuccess) {
+        await onAssignSuccess();
+      }
+
+      // reset selections on completion success
       setStudentId("");
       setModuleId("");
     } catch (error) {
-      // 4. Fallback checks message strings from backend error responses directly
+      // Fallback checks message strings from backend error responses directly
       const errorMsg = error.response?.data?.message || "Assignment failed!";
       toast.error(errorMsg);
     } finally {

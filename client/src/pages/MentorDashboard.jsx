@@ -34,19 +34,19 @@ export default function MentorDashboard() {
   }, []);
 
   // Fetch Students Progress
-  useEffect(() => {
-    async function getStudents() {
-      try {
-        const result = await axios.get(`${apiUrl}/api/lesson-progress/all`, {
-          headers: { token },
-        });
-        setStudents(result.data.progress);
-      } catch (error) {
-        toast.error("Failed to fetch progress!");
-      }
+  async function getStudentsProgress() {
+    try {
+      const result = await axios.get(`${apiUrl}/api/lesson-progress/all`, {
+        headers: { token },
+      });
+      setStudents(result.data.progress);
+    } catch (error) {
+      toast.error("Failed to fetch progress!");
     }
+  }
 
-    getStudents();
+  useEffect(() => {
+    getStudentsProgress();
   }, []);
 
   return (
@@ -89,6 +89,7 @@ export default function MentorDashboard() {
             modules={modules}
             students={students}
             setLoading={setLoading}
+            onAssignSuccess={getStudentsProgress}
           />
         )}
 

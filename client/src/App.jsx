@@ -22,7 +22,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const location = useLocation();
 
-  // ✅ Load from localStorage on refresh
+  // Load from localStorage on refresh
   useEffect(() => {
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("userRole");
@@ -37,7 +37,7 @@ export default function App() {
       {!["/login", "/register"].includes(location.pathname) && (
         <Navbar user={user} setUser={setUser} />
       )}
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Home />} />
 
