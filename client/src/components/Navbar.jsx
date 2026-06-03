@@ -41,19 +41,19 @@ export default function Navbar({ user, setUser }) {
             {user ? (
               <>
                 <div className="flex items-center gap-3">
-                  {/* ✅ User Info */}
+                  {/* User Info */}
                   <div className="flex flex-col items-end">
                     <span className="text-gray-800 text-sm font-medium">
                       👤 {user.username}
                     </span>
 
-                    {/* ✅ Role Badge */}
+                    {/* Role Badge */}
                     <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 font-semibold capitalize">
                       {user.role}
                     </span>
                   </div>
 
-                  {/* ✅ Logout Button */}
+                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 transition"

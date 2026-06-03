@@ -29,7 +29,7 @@ export default function Register() {
 
       toast.success("Registration successful!");
 
-      // ✅ optional: auto redirect to login
+      //optional: auto redirect to login
       navigate("/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed!");
@@ -40,7 +40,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      {/* ✅ Transparent Loader Overlay (optional) */}
+      {/* Transparent Loader Overlay (optional) */}
       {loading && <Loader />}
 
       <div className="w-full max-w-md space-y-8 rounded-xl bg-gray-50 dark:bg-gray-200 p-8 shadow-md">
